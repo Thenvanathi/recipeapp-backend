@@ -1,18 +1,21 @@
-// Import the Express.js library
 const express = require('express');
+const fetch = require('node-fetch'); // for older Node.js
 
-//Create an instance of an Express application
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-//Define a port for our server to listen on 
-const port = 5000; 
+app.get('/search', async (req, res) => {
+  const query = req.query.query;
+  try {
+    const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Backend error:', error);
+    res.status(500).json({ error: 'Failed to fetch recipes' });
+  }
+});
 
-//Define a basic route for the homepage
-app.get('/', (req,res) => {
-    res.send('Hello from the backend!');
-}) 
-
-//Start the server and listen on the specified port 
-app.listen(port,() => {
-    console.log('Server is running on http://localhost:${port}');
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
